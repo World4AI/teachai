@@ -1,4 +1,5 @@
 import argparse
+import time
 
 import torch
 import torch.nn as nn
@@ -202,13 +203,20 @@ if __name__ == "__main__":
     ).to(args.device)
 
     optimizer = torch.optim.Adam(model.parameters(), lr=args.lr)
+    scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
+        optimizer, factor=0.1, patience=10, verbose=True
+    )
 
     # -----------------------------------------------------------------
     # Training Loop
     # -----------------------------------------------------------------
 
     def train():
+        # logging variables
+        start_time = time.time()
+        t0 = start_time
         best_loss = float("inf")
+
         for epoch in range(args.num_epochs):
             for batch, (x, y) in enumerate(train_dataloader):
                 optimizer.zero_grad()
@@ -222,11 +230,15 @@ if __name__ == "__main__":
 
                 loss.backward()
                 optimizer.step()
-
                 val_loss = evaluate(test_dataloader)
+                scheduler.step(val_loss)
 
+                t1 = time.time()
+                time_passed_batch = t1 - t0
+                time_passed_start = t1 - start_time
+                t0 = t1
                 print(
-                    f"Epoch: {epoch+1}/{args.num_epochs}, Batch: {batch+1}/{len(train_dataloader)}, Train Loss: {loss.item():.4f} | Val Loss: {val_loss:.4f}"
+                    f"Time Since Start {(time_passed_start/ 60):.2f}min, Time Since Last Batch {time_passed_batch:.2f}sec, Epoch: {epoch+1}/{args.num_epochs}, Batch: {batch+1}/{len(train_dataloader)}, Train Loss: {loss.item():.4f} | Val Loss: {val_loss:.4f}"
                 )
 
                 # save weights
