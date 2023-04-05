@@ -12,7 +12,9 @@ curl -O https://www.manythings.org/anki/deu-eng.zip
 unzip deu-eng.zip
 cd -
 ```
+
 Our implementation does not fully reflect the model from the paper, but we try to keep the general idea. We provide pretrained weights for a model that we trained for 40 epochs. After 40 epochs we can achieve the following results.
+
 ```bash
 --------------------------------------------------
 Generating translation for: I am hungry
@@ -47,4 +49,5 @@ Generating translation for: To be or not to be
 Model Translation: "sei oder nicht wahr"
 Expected Translation: Sein oder nicht sein
 ```
-While some of the translations are quite accurate, others are lacking. For example the sentence *She is funny* becomes *She became lazy.* This is expected, as the dataset and the model are relatively small for the task. 
+
+While some of the translations are quite accurate, others are lacking. For example the sentence _She is funny_ becomes _She became lazy._ This is expected, as the dataset and the model are relatively small for the task.
